@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popeyes® Louisiana Kitchen | Love That Chicken</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- BRAND CONSTANTS & BASE --- */
+        :root {
+            --popeyes-orange: #F16A1B;
+            --popeyes-orange-deep: #E05510;
+            --popeyes-white: #FFFFFF;
+            --popeyes-dark: #1A1A1A;
+            --font-display: 'Oswald', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--popeyes-dark);
+            background-color: var(--popeyes-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        h1, h2, h3, .oswald {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button, .btn {
+            cursor: pointer;
+            border: none;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* --- REVEAL ANIMATIONS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 1. STICKY NAVIGATION BAR --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 24px 0;
+            transition: var(--transition);
+        }
+
+        nav.scrolled {
+            background-color: var(--popeyes-dark);
+            padding: 12px 0;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            background-color: var(--popeyes-orange);
+            color: var(--popeyes-white);
+            padding: 4px 16px;
+            border-radius: 9999px;
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            letter-spacing: -0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--popeyes-white);
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            opacity: 0.9;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--popeyes-orange);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-cta .btn {
+            background-color: var(--popeyes-orange-deep);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(224, 85, 16, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cart-toggle {
+            background: none;
+            color: white;
+            position: relative;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--popeyes-orange);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: var(--font-body);
+        }
+
+        .nav-cta .btn:hover {
+            background-color: var(--popeyes-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(224, 85, 16, 0.4);
+        }
+
+        /* --- CART DRAWER --- */
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: white;
+            z-index: 2000;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 24px;
+            background-color: var(--popeyes-dark);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 { font-size: 24px; }
+
+        .close-cart {
+            background: none;
+            color: white;
+            font-size: 24px;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            background: #f9fafb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-details h4 { font-size: 16px; margin-bottom: 4px; }
+        .cart-item-details p { font-size: 13px; color: #6b7280; }
+
+        .cart-item-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .qty-btns {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 2px;
+        }
+
+        .qty-btns button {
+            width: 24px;
+            height: 24px;
+            background: none;
+            font-size: 16px;
+            color: var(--popeyes-dark);
+        }
+
+        .remove-item {
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .cart-footer {
+            padding: 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .cart-summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            font-family: var(--font-display);
+            margin-top: 12px;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 12px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--popeyes-orange);
+            color: white;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .menu-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .menu-tabs::-webkit-scrollbar { display: none; }
+
+        .menu-tab {
+            padding: 10px 24px;
+            background: #f3f4f6;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .menu-tab.active {
+            background: var(--popeyes-orange);
+            color: white;
+        }
+
+
+        .nav-cta .btn:hover {
+            background-color: var(--popeyes-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(224, 85, 16, 0.4);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+        }
+
+        .mobile-menu-btn span {
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100vh;
+            background-color: var(--popeyes-dark);
+            z-index: 1001;
+            padding: 80px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            transition: 0.4s ease;
+        }
+
+        .mobile-nav-drawer.active {
+            right: 0;
+        }
+
+        .mobile-nav-drawer a {
+            color: white;
+            font-family: var(--font-display);
+            font-size: 28px;
+        }
+
+        /* --- 2. HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            background-color: var(--popeyes-dark);
+            color: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .diagonal-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--popeyes-orange) 0%, transparent 100%);
+            clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%);
+            opacity: 0.2;
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 50%, rgba(241, 106, 27, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 72px;
+            line-height: 0.9;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            max-width: 420px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background-color: var(--popeyes-orange);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 16px 40px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover { background-color: var(--popeyes-orange-deep); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(241, 106, 27, 0.3); }
+        .btn-outline:hover { background-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        .hero-badge {
+            position: absolute;
+            right: 8%;
+            bottom: 12%;
+            width: 120px;
+            height: 120px;
+            background-color: var(--popeyes-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 16px;
+            font-family: var(--font-display);
+            animation: rotate 10s linear infinite;
+            font-size: 11px;
+            border: 4px solid var(--popeyes-dark);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: white;
+            line-height: 1.2;
+            z-index: 10;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            z-index: 5;
+            opacity: 0.6;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
+            40% {transform: translateY(-10px) translateX(-50%);}
+            60% {transform: translateY(-5px) translateX(-50%);}
+        }
+
+        /* --- 3. FLASH DEAL BANNER --- */
+        .flash-banner {
+            background-color: var(--popeyes-orange);
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .marquee {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+        }
+
+        .marquee span {
+            color: white;
+            font-family: var(--font-display);
+            font-size: 14px;
+            margin-right: 60px;
+            text-transform: uppercase;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- 4. FEATURED MENU SECTION --- */
+        .section-padding { padding: 100px 0; }
+        
+        .section-header {
+            margin-bottom: 48px;
+            border-left: 6px solid var(--popeyes-orange);
+            padding-left: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 32px;
+            color: var(--popeyes-dark);
+            font-weight: 700;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .menu-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--popeyes-orange);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        .menu-img {
+            width: 100%;
+            height: 180px;
+            background-color: rgba(241, 106, 27, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Styling a silhouette hint for placeholders */
+        .menu-img::after {
+            content: '🍗';
+            font-size: 64px;
+            opacity: 0.15;
+            color: var(--popeyes-orange);
+        }
+
+        .menu-info {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-info h3 { margin-bottom: 8px; font-size: 20px; color: var(--popeyes-dark); }
+        .menu-info p { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
+        .menu-price { font-family: var(--font-display); font-size: 24px; color: var(--popeyes-dark); font-weight: 700; margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+        
+        .add-to-order {
+            padding: 8px 16px;
+            background-color: var(--popeyes-orange);
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .btn-centered {
+            display: block;
+            margin: 60px auto 0;
+            padding: 18px 60px;
+        }
+
+        /* --- 5. SIGNATURE STORY SECTION --- */
+        .story-section {
+            display: flex;
+            flex-wrap: wrap;
+            min-height: 500px;
+        }
+
+        .story-left {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--popeyes-dark);
+            color: white;
+            padding: 80px 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .story-right {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--popeyes-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-left h2 { font-size: 42px; margin-bottom: 30px; }
+        .story-left p { font-size: 18px; line-height: 1.8; margin-bottom: 40px; }
+        
+        .story-link {
+            color: white;
+            font-family: var(--font-display);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .story-graphic {
+            width: 60%;
+            aspect-ratio: 1;
+            background-color: rgba(255,255,255,0.2);
+            clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 150px;
+        }
+
+        /* --- 6. SOCIAL PROOF / NUMBERS SECTION --- */
+        .stats-section {
+            background-color: var(--popeyes-dark);
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-block h3 {
+            font-size: 48px;
+            color: var(--popeyes-orange);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .stat-block p {
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+
+        /* --- 7. DEALS & LIMITED TIME OFFERS SECTION --- */
+        .deal-card {
+            background-color: var(--popeyes-orange);
+            padding: 32px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            border: 4px solid var(--popeyes-dark);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+        }
+
+        .deal-badge {
+            background-color: white;
+            color: var(--popeyes-orange);
+            padding: 2px 10px;
+            font-size: 10px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 12px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .deal-card .menu-price {
+            color: var(--popeyes-dark);
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .claim-deal {
+            background-color: var(--popeyes-dark);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .countdown {
+            margin-top: 15px;
+            font-family: var(--font-display);
+            font-size: 18px;
+            color: #d00;
+        }
+
+        /* --- 8. CATERING SECTION --- */
+        .catering-section {
+            background-color: var(--popeyes-dark);
+            position: relative;
+            overflow: hidden;
+            color: white;
+            padding: 100px 0;
+        }
+
+        .catering-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30%;
+            height: 100%;
+            background-color: var(--popeyes-orange);
+            clip-path: polygon(100% 0, 0 100%, 100% 100%);
+            z-index: 1;
+        }
+
+        .catering-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .catering-container h2 { font-size: 48px; margin-bottom: 20px; }
+        .catering-container p { font-size: 20px; max-width: 700px; margin: 0 auto 40px; opacity: 0.9; }
+
+        .catering-badges {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .catering-badge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--popeyes-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .catering-badge-item span {
+            font-family: var(--font-display);
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        /* --- 9. REWARDS / APP SECTION --- */
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .phone-mockup {
+            width: 260px;
+            height: 520px;
+            background-color: #000;
+            border-radius: 36px;
+            border: 10px solid #1f2937;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 40px 100px -20px rgba(241, 106, 27, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 25px;
+            background: #1f2937;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+
+        .app-screen {
+            background-color: white;
+            flex-grow: 1;
+            padding: 40px 20px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background-color: var(--popeyes-orange);
+            height: 24px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .app-points {
+            border: 4px solid var(--popeyes-orange);
+            height: 140px;
+            border-radius: 50%;
+            margin: 10px auto 30px;
+            width: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-points span { font-family: var(--font-display); color: var(--popeyes-orange); line-height: 1; }
+        .app-points .count { font-size: 40px; font-weight: 700; }
+        .app-points .label { font-size: 10px; margin-top: 4px; }
+
+        .reward-perks {
+            margin: 30px 0;
+        }
+
+        .reward-perks li {
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .reward-perks li::before {
+            content: '✓';
+            background-color: var(--popeyes-orange);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .app-btn {
+            background-color: var(--popeyes-dark);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 9999px;
+            flex: 1;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- 10. TESTIMONIALS / HYPE SECTION --- */
+        .testimonials { background-color: var(--popeyes-dark); color: white; text-align: center; overflow: hidden; }
+        
+        .carousel-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .review-card {
+            min-width: 100%;
+            padding: 40px 20px;
+        }
+
+        .stars { color: var(--popeyes-orange); font-size: 24px; margin-bottom: 20px; }
+        .review-quote { font-size: 32px; font-weight: 700; margin-bottom: 20px; font-style: italic; }
+        .review-author { font-family: var(--font-display); font-size: 18px; color: var(--popeyes-orange); }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        .dot.active { background-color: var(--popeyes-orange); }
+
+        /* --- 11. LOCATION FINDER SECTION --- */
+        .location-search {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 50px;
+        }
+
+        .location-search input {
+            flex-grow: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .location-search button {
+            padding: 0 30px;
+            background-color: var(--popeyes-orange);
+            color: white;
+            border-radius: 4px;
+        }
+
+        #location-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            opacity: 0;
+            transition: 0.5s ease;
+        }
+
+        #location-results.visible { opacity: 1; }
+
+        .result-card {
+            border: 1px solid #eee;
+            padding: 25px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .result-card h3 { margin-bottom: 10px; }
+        .result-card p { font-size: 14px; margin-bottom: 5px; color: #555; }
+        .hours { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+
+        .result-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .result-btns .btn { flex: 1; font-size: 12px; padding: 10px; border-radius: 4px; }
+        .btn-outline-orange { border: 2px solid var(--popeyes-orange); color: var(--popeyes-orange); }
+
+        /* --- 12. FOOTER --- */
+        footer {
+            background-color: var(--popeyes-dark);
+            color: rgba(255,255,255,0.5);
+            padding: 100px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        .footer-logo-side p { margin-top: 24px; opacity: 0.8; font-size: 14px; }
+        
+        .footer-col h4 {
+            color: var(--popeyes-white);
+            font-family: var(--font-display);
+            margin-bottom: 24px;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a { transition: var(--transition); font-size: 14px; }
+        .footer-col ul li a:hover { color: var(--popeyes-orange); }
+
+        .social-links { display: flex; gap: 12px; }
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .social-icon:hover { background-color: var(--popeyes-orange); transform: translateY(-3px); }
+        .social-icon svg { width: 16px; height: 16px; fill: white; }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        /* --- CONVERSION HUB --- */
+        .conversion-hub {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: white;
+            padding: 12px 32px;
+            border-radius: 9999px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.05);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        .conversion-hub.visible { transform: translateX(-50%) translateY(0); }
+
+        .hub-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            opacity: 0.4;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .hub-text {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--popeyes-dark);
+            letter-spacing: 0.05em;
+        }
+
+        .hub-divider {
+            width: 1px;
+            height: 20px;
+            background-color: #e5e7eb;
+        }
+
+        .hub-btn {
+            background-color: var(--popeyes-orange);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- MOBILE STICKY CTA --- */
+        .mobile-sticky-cta {
+            display: none;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 860px) {
+            .conversion-hub {
+                gap: 12px;
+                padding: 10px 20px;
+                width: calc(100% - 40px);
+                justify-content: space-between;
+            }
+            .hub-status { gap: 6px; }
+            .hub-text { font-size: 9px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-cta { display: none; }
+            .mobile-menu-btn { display: flex; }
+            
+            .hero-content h1 { font-size: 40px; }
+            .hero .container { grid-template-columns: 1fr; text-align: center; }
+            .hero-content p { margin: 0 auto 32px; font-size: 15px; }
+            .hero-btns { justify-content: center; flex-direction: column; width: 100%; }
+            .hero::after { display: none; }
+            .diagonal-accent { width: 100%; height: 30%; clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); opacity: 0.3; }
+            .hero-badge { display: none; }
+
+            .section-header h2 { font-size: 24px; }
+            .story-left h2 { font-size: 28px; }
+            .catering-container h2 { font-size: 28px; }
+            .rewards-grid { grid-template-columns: 1fr; gap: 48px; }
+            .footer-bottom { justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. NAVIGATION -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="#" class="logo">POPEYES</a>
+            <div class="nav-links">
+                <a href="#menu">Menu</a>
+                <a href="#deals">Deals</a>
+                <a href="#catering">Catering</a>
+                <a href="#rewards">Rewards</a>
+                <a href="#locations">Locations</a>
+            </div>
+            <div class="nav-cta">
+                <button class="cart-toggle" id="cart-toggle">
+                    🛒
+                    <div class="cart-count" id="cart-count">0</div>
+                </button>
+                <a href="#menu" class="btn">Order Now</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Order</h3>
+            <button class="close-cart" id="close-cart">×</button>
+        </div>
+        <div class="cart-items" id="cart-items-container">
+            <div style="text-align: center; padding-top: 40px; color: #6b7280;">Your cart is empty. Let's change that.</div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary-line">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">$0.00</span>
+            </div>
+            <div class="cart-summary-line" style="color: #6b7280;">
+                <span>Tax</span>
+                <span id="cart-tax">$0.00</span>
+            </div>
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">Checkout Now</button>
+        </div>
+    </div>
+
+    <div class="mobile-nav-drawer" id="mobile-drawer">
+        <a href="#menu" class="mobile-link">Menu</a>
+        <a href="#deals" class="mobile-link">Deals</a>
+        <a href="#catering" class="mobile-link">Catering</a>
+        <a href="#rewards" class="mobile-link">Rewards</a>
+        <a href="#locations" class="mobile-link">Locations</a>
+        <a href="#order" class="btn btn-primary" style="margin-top: 20px;">Order Now</a>
+    </div>
+
+    <!-- 2. HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="diagonal-accent"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="reveal">LOVE THAT<br>CHICKEN FROM<br>POPEYES.</h1>
+                <p class="reveal">Marinated for 12 hours. Pressure-fried to perfection. Served Louisiana bold.</p>
+                <div class="hero-btns reveal">
+                    <a href="#menu" class="btn btn-primary">Order Now</a>
+                    <a href="#deals" class="btn btn-outline">See What's New</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-badge">LOUISIANA KITCHEN SINCE 1972</div>
+        <div class="scroll-down" onclick="window.scrollTo(0, window.innerHeight)">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+        </div>
+    </section>
+
+    <!-- 3. FLASH DEAL BANNER -->
+    <div class="flash-banner">
+        <div class="marquee">
+            <span>🔥 SPICY CHICKEN SANDWICH COMBO — $8.99</span>
+            <span>|</span>
+            <span>3PC TENDER MEAL — $7.49</span>
+            <span>|</span>
+            <span>FREE DELIVERY ON ORDERS OVER $20</span>
+            <span>|</span>
+            <span>NEW: GHOST PEPPER WINGS 🔥</span>
+            <!-- Duplicate for infinite effect -->
+            <span>🔥 SPICY CHICKEN SANDWICH COMBO — $8.99</span>
+            <span>|</span>
+            <span>3PC TENDER MEAL — $7.49</span>
+            <span>|</span>
+            <span>FREE DELIVERY ON ORDERS OVER $20</span>
+            <span>|</span>
+            <span>NEW: GHOST PEPPER WINGS 🔥</span>
+        </div>
+    </div>
+
+    <!-- 4. FEATURED MENU -->
+    <section class="section-padding" id="menu">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Crave-Worthy Selections</h2>
+            </div>
+            
+            <div class="menu-tabs reveal" id="menu-tabs">
+                <button class="menu-tab active" data-category="all">All Items</button>
+                <button class="menu-tab" data-category="sandwiches">Sandwiches</button>
+                <button class="menu-tab" data-category="chicken">Chicken</button>
+                <button class="menu-tab" data-category="sides">Sides</button>
+                <button class="menu-tab" data-category="drinks">Drinks</button>
+            </div>
+
+            <div class="menu-grid" id="main-menu-grid">
+                <!-- dynamic menu content -->
+            </div>
+            <button class="btn btn-outline btn-centered reveal" style="color: var(--popeyes-dark); border-color: var(--popeyes-dark); font-size: 14px;">View Nutritional Info</button>
+        </div>
+    </section>
+
+    <!-- 5. SIGNATURE STORY -->
+    <section class="story-section reveal">
+        <div class="story-left">
+            <h2>12 Hours of Marination. Zero Shortcuts.</h2>
+            <p>Our soul is rooted in the boiling pots and family tables of New Orleans. We don't just fry chicken; we celebrate a rich heritage of bold flavors and uncompromising quality. Every piece is handled with care and served with pride.</p>
+            <a href="#" class="story-link">Our Story <span>→</span></a>
+        </div>
+        <div class="story-right">
+            <div class="story-graphic">🔥</div>
+        </div>
+    </section>
+
+    <!-- 6. SOCIAL PROOF -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-block reveal">
+                    <h3>3,700+</h3>
+                    <p>Locations Worldwide</p>
+                </div>
+                <div class="stat-block reveal">
+                    <h3>50+</h3>
+                    <p>Years of Bold Flavor</p>
+                </div>
+                <div class="stat-block reveal">
+                    <h3>4.7★</h3>
+                    <p>App Rating</p>
+                </div>
+                <div class="stat-block reveal">
+                    <h3>#1</h3>
+                    <p>Chicken Sandwich</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. DEALS & LTO -->
+    <section class="section-padding" id="deals">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Don't Sleep on These Deals</h2>
+            </div>
+            <div class="menu-grid">
+                <div class="deal-card reveal">
+                    <div class="absolute top-2 right-4 bg-white text-[var(--popeyes-orange)] text-[10px] px-2 py-0.5 font-bold rounded-full">HOT</div>
+                    <div class="menu-info" style="padding: 0;">
+                        <span class="deal-badge">LIMITED TIME</span>
+                        <h3 style="color: white;">Ghost Pepper Wings</h3>
+                        <p style="color: rgba(255,255,255,0.9);">Fiery and bold wings that bring the real heat. Marinated for 12 hours.</p>
+                        <div class="menu-price">
+                            <span style="color: white;">$6.00</span>
+                            <span class="claim-deal">Claim Deal</span>
+                        </div>
+                        <div class="countdown" id="timer" style="color: var(--popeyes-dark); font-size: 14px; opacity: 0.8;">Ends in: 04:22:15</div>
+                    </div>
+                </div>
+                <div class="menu-card reveal">
+                    <div class="menu-info">
+                        <span class="deal-badge" style="background: var(--popeyes-orange); color: white;">LIMITED TIME</span>
+                        <h3>Butterfly Shrimp Box</h3>
+                        <p>Crispy butterfly shrimp, cajun fries, and a biscuit. A bayou feast.</p>
+                        <div class="menu-price">
+                            <span>$7.99</span>
+                            <button class="add-to-order btn">Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-card reveal">
+                    <div class="menu-info">
+                        <span class="deal-badge" style="background: var(--popeyes-orange); color: white;">LIMITED TIME</span>
+                        <h3>Big Family Feast</h3>
+                        <p>12pc Bone-in chicken, 2 large sides, and 6 biscuits. Feeds 4-6.</p>
+                        <div class="menu-price">
+                            <span>$29.99</span>
+                            <button class="add-to-order btn">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. CATERING SECTION -->
+    <section class="catering-section" id="catering">
+        <div class="container catering-container reveal">
+            <h2>Bring the Bayou to Your Next Event</h2>
+            <p>Popeyes catering feeds 10 to 500. Big flavor for every occasion. No party is too big for our signature Louisiana flavor.</p>
+            <div class="hero-btns" style="justify-content: center;">
+                <button class="btn btn-primary">Request a Quote</button>
+                <button class="btn btn-outline">Learn More</button>
+            </div>
+            <div class="catering-badges">
+                <div class="catering-badge-item">
+                    <div class="badge-icon">💼</div>
+                    <span>Office Lunches</span>
+                </div>
+                <div class="catering-badge-item">
+                    <div class="badge-icon">👰</div>
+                    <span>Weddings & Parties</span>
+                </div>
+                <div class="catering-badge-item">
+                    <div class="badge-icon">🏈</div>
+                    <span>Game Day</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. REWARDS / APP -->
+    <section class="section-padding" id="rewards">
+        <div class="container">
+            <div class="rewards-grid">
+                <div class="reveal">
+                    <div class="phone-mockup">
+                        <div class="app-screen">
+                            <div class="app-header"></div>
+                            <div class="app-points">
+                                <span>POINTS</span>
+                                <span class="count">750</span>
+                            </div>
+                            <div style="background: #eee; height: 10px; border-radius: 5px; margin: 10px 0;"></div>
+                            <div style="background: #eee; height: 10px; border-radius: 5px; width: 60%;"></div>
+                            <div style="background: var(--popeyes-orange); height: 80px; margin-top: 30px; border-radius: 8px; opacity: 0.1;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <h2 class="oswald" style="font-size: 42px; margin-bottom: 20px;">Earn Points. Score Free Chicken.</h2>
+                    <p style="font-size: 18px; margin-bottom: 30px;">The more you eat, the more you earn. Our rewards program is as bold as our seasoning.</p>
+                    <ul class="reward-perks">
+                        <li>10 Points for every $1 spent</li>
+                        <li>Free Large Side on your birthday</li>
+                        <li>Exclusive mobile-only deals</li>
+                        <li>Skip the line with mobile ordering</li>
+                    </ul>
+                    <div class="app-buttons">
+                        <button class="app-btn">App Store</button>
+                        <button class="app-btn">Google Play</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. TESTIMONIALS -->
+    <section class="section-padding testimonials">
+        <div class="container">
+            <h2 class="reveal">The People Have Spoken</h2>
+            <div class="carousel-container reveal">
+                <div class="carousel-track" id="carousel-track">
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p class="review-quote">"The spicy sandwich broke the internet for a reason."</p>
+                        <p class="review-author">— Marcus, Atlanta</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p class="review-quote">"Cajun fries hit different every single time."</p>
+                        <p class="review-author">— Jasmine, New Orleans</p>
+                    </div>
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p class="review-quote">"Popeyes catered our wedding. Guests still talk about it."</p>
+                        <p class="review-author">— Dre, Houston</p>
+                    </div>
+                </div>
+                <div class="carousel-dots" id="carousel-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. LOCATION FINDER -->
+    <section class="section-padding" id="locations">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Find Your Nearest Popeyes</h2>
+            </div>
+            <form class="location-search reveal" id="search-form">
+                <input type="text" placeholder="City or Zip Code (e.g. Houston or 77001)" id="zip-input">
+                <button type="submit" class="btn">Find store</button>
+            </form>
+
+            <div id="location-results" class="reveal">
+                <!-- dynamic locations -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 12. FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-logo-side">
+                    <div class="logo">POPEYES</div>
+                    <p>Bold flavor since 1972. Marinating for 12 hours, pressure frying to perfection.</p>
+                    <div class="social-links" style="margin-top: 30px;">
+                        <a href="#" class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12.525.023l-.35-.023c-.225 0-.442.019-.658.058-1.1.2-6.105 2.139-9.251 6.044C.306 8.794 0 10.293 0 12.184c0 2.054.396 4.046 1.354 5.951.856 1.707 2.013 3.195 3.42 4.414.37.32.754.61 1.146.866.454.298.922.541 1.401.733.058.02.115.044.177.061l.247.047c.215.027.433.042.651.042.829 0 1.456-.233 1.996-.708.432-.375.614-.816.634-1.39.005-.149-.01-.297-.039-.451-.01-.059-.02-.112-.034-.166a.863.863 0 0 0-.01-.044c-.453-1.638-.696-3.32-.73-5.025-.01-.399.24-.766.621-.86.371-.09.771.071.977.391.564.887 1.238 1.688 2.043 2.38.381.328.812.518 1.258.551.05.006.1.008.15.008 1.046 0 1.833-.673 2.301-1.851.364-.916.486-1.909.512-2.934a.81.81 0 0 0-.03-.23.14.14 0 0 1-.005-.015c-.092-.379-.199-.753-.314-1.13a.82.82 0 0 0-.791-.58h-.022c-.412.012-.767.291-.856.696-.134.611-.299 1.213-.505 1.796-.133.376-.431.579-.768.528-.466-.07-.768-.485-.712-.977a11.954 11.954 0 0 1 .494-2.188c.08-.258.175-.515.289-.762.146-.314.106-.677-.123-.923s-.564-.326-.879-.214c-.658.232-1.282.55-1.87.942-.321.21-.494.577-.442.946.012.083.031.166.056.248.18.571.321 1.151.42 1.74a.8.8 0 0 0 .79.67c.05 0 .09-.004.14-.01.442-.058.752-.464.7-.9-.083-.73-.242-1.427-.478-2.09-.168-.474-.031-.967.35-.1.08.182.164.364.256.54.19.365.551.52.89.431.322-.08.571-.341.65-.678.071-.31.133-.62.188-.934.116-.65-.45-1.12-1.077-1.12-.058 0-.115.01-.173.01-.482.046-.942.179-1.378.397a.822.822 0 0 0-.34.341c-.015.023-.03.047-.044.07-.464.79-.812 1.638-1.034 2.529-.12.482-.601.761-1.066.621-.476-.144-.754-.64-.621-1.116a11.23 11.23 0 0 1 1.47-3.155c.34-.482.518-.942.518-1.411 0-.661-.264-1.258-.753-1.68-.482-.412-1.144-.65-1.85-.65h-.058z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Menu</h4>
+                    <ul>
+                        <li><a href="#">Cravings</a></li>
+                        <li><a href="#">Chicken Sandwich</a></li>
+                        <li><a href="#">Family Meals</a></li>
+                        <li><a href="#">Sides</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Popeyes</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Franchising</a></li>
+                        <li><a href="#">Our Foundation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col" id="follow-us">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Accessibility</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="flex items-center gap-4">
+                    <span class="oswald text-white uppercase text-sm tracking-tighter">Popeyes®</span>
+                    <span>© 2025 Popeyes Louisiana Kitchen.</span>
+                </div>
+                <div class="flex gap-6">
+                    <span>Menu</span><span>Catering</span><span>Rewards</span><span>Locations</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CONVERSION HUB -->
+    <div class="conversion-hub" id="conversion-hub">
+        <div class="hub-status">
+            <div class="pulse-dot"></div>
+            <span class="hub-text">Live in Houston: 42 orders placed this hour</span>
+        </div>
+        <div class="hub-divider"></div>
+        <a href="#locations" class="hub-btn">Find Store Near Me</a>
+    </div>
+
+    <!-- --- JAVASCRIPT --- -->
+    <script>
+        // --- DATA ---
+        const menuData = [
+            { id: 1, name: "Spicy Chicken Sandwich", price: 5.99, category: "sandwiches", icon: "🥪", desc: "Marinated spicy chicken breast, pickles, and spicy mayo on a brioche bun." },
+            { id: 2, name: "Classic Chicken Sandwich", price: 5.99, category: "sandwiches", icon: "🥐", desc: "Marinated chicken breast, pickles, and mayo on a brioche bun." },
+            { id: 3, name: "3pc Chicken Tenders", price: 7.49, category: "chicken", icon: "🍗", desc: "Hand-battered chicken tenders with your choice of dipping sauce." },
+            { id: 4, name: "5pc Tenders Combo", price: 11.99, category: "chicken", icon: "🥓", desc: "5 hand-battered tenders, choice of side, and a biscuit." },
+            { id: 5, name: "Cajun Fries", price: 2.99, category: "sides", icon: "🍟", desc: "Perfectly seasoned with our signature Cajun dry rub." },
+            { id: 6, name: "Red Beans & Rice", price: 3.49, category: "sides", icon: "🍚", desc: "Slow-cooked red beans and rice, a Louisiana staple." },
+            { id: 7, name: "Biscuits", price: 1.29, category: "sides", icon: "🥐", desc: "Flaky, buttery buttermilk biscuits." },
+            { id: 8, name: "Cajun Sparkle Sauce", price: 0.50, category: "sides", icon: "🥫", desc: "The secret flavor that makes everything better." },
+            { id: 9, name: "Mashed Potatoes", price: 3.49, category: "sides", icon: "🥔", desc: "Creamy mashed potatoes with Cajun gravy." },
+            { id: 10, name: "Classic Coke", price: 2.19, category: "drinks", icon: "🥤", desc: "Ice cold Coca-Cola Classic." },
+            { id: 11, name: "Lousiana Iced Tea", price: 2.19, category: "drinks", icon: "🍹", desc: "Freshly brewed sweet or unsweet tea." },
+            { id: 12, name: "Ghost Pepper Wings", price: 6.00, category: "chicken", icon: "🔥", desc: "Bold, fiery wings for the brave at heart." }
+        ];
+
+        const locationData = [
+            { id: 1, name: "Popeyes - Times Square", city: "New York", zip: "10036", address: "555 7th Ave", state: "NY", phone: "(212) 555-0101" },
+            { id: 2, name: "Popeyes - Hollywood Blvd", city: "Los Angeles", zip: "90028", address: "6600 Hollywood Blvd", state: "CA", phone: "(323) 555-0102" },
+            { id: 3, name: "Popeyes - Magnificent Mile", city: "Chicago", zip: "60611", address: "100 E Ontario St", state: "IL", phone: "(312) 555-0103" },
+            { id: 4, name: "Popeyes - Downtown Houston", city: "Houston", zip: "77002", address: "1200 Main St", state: "TX", phone: "(713) 555-0104" },
+            { id: 5, name: "Popeyes - South Beach", city: "Miami", zip: "33139", address: "1000 Ocean Dr", state: "FL", phone: "(305) 555-0105" },
+            { id: 6, name: "Popeyes - Midtown Atlanta", city: "Atlanta", zip: "30308", address: "600 Peachtree St NE", state: "GA", phone: "(404) 555-0106" },
+            { id: 7, name: "Popeyes - Bourbon Street", city: "New Orleans", zip: "70130", address: "400 Bourbon St", state: "LA", phone: "(504) 555-0107" },
+            { id: 8, name: "Popeyes - Dallas Arts", city: "Dallas", zip: "75201", address: "2000 Flora St", state: "TX", phone: "(214) 555-0108" }
+        ];
+
+        let cart = [];
+
+        // 1. MENU RENDERING & FILTERING
+        const menuGrid = document.getElementById('main-menu-grid');
+        const menuTabs = document.querySelectorAll('.menu-tab');
+
+        function renderMenu(category = 'all') {
+            menuGrid.innerHTML = '';
+            const filtered = category === 'all' ? menuData : menuData.filter(item => item.category === category);
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'menu-card reveal active'; // Force active for dynamic render
+                card.innerHTML = `
+                    <div class="menu-img" style="font-size: 60px;">${item.icon}</div>
+                    <div class="menu-info">
+                        <h3>${item.name}</h3>
+                        <p>${item.desc}</p>
+                        <div class="menu-price">$${item.price.toFixed(2)}</div>
+                        <button class="add-to-order btn" onclick="addToCart(${item.id})">Add to Order</button>
+                    </div>
+                `;
+                menuGrid.appendChild(card);
+            });
+        }
+
+        menuTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                menuTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderMenu(tab.dataset.category);
+            });
+        });
+
+        renderMenu();
+
+        // 2. CART LOGIC
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartToggle = document.getElementById('cart-toggle');
+        const closeCart = document.getElementById('close-cart');
+        const overlay = document.getElementById('overlay');
+        const itemsContainer = document.getElementById('cart-items-container');
+        const cartCount = document.getElementById('cart-count');
+
+        function toggleCart() {
+            cartDrawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('modal-open');
+        }
+
+        cartToggle.addEventListener('click', toggleCart);
+        closeCart.addEventListener('click', toggleCart);
+        overlay.addEventListener('click', toggleCart);
+
+        function addToCart(id) {
+            const item = menuData.find(m => m.id === id);
+            const existing = cart.find(c => c.id === id);
+            
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...item, qty: 1 });
+            }
+            updateCart();
+            // Show cart on first add if hidden
+            if(!cartDrawer.classList.contains('active')) toggleCart();
+        }
+
+        function updateCart() {
+            itemsContainer.innerHTML = '';
+            let subtotal = 0;
+            let totalQty = 0;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<div style="text-align: center; padding-top: 40px; color: #6b7280;">Your cart is empty. Let\'s change that.</div>';
+            } else {
+                cart.forEach(item => {
+                    subtotal += item.price * item.qty;
+                    totalQty += item.qty;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <div class="cart-item-img">${item.icon}</div>
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p>$${item.price.toFixed(2)}</p>
+                            <div class="cart-item-actions">
+                                <div class="qty-btns">
+                                    <button onclick="changeQty(${item.id}, -1)">-</button>
+                                    <span>${item.qty}</span>
+                                    <button onclick="changeQty(${item.id}, 1)">+</button>
+                                </div>
+                                <button class="remove-item" onclick="removeFromCart(${item.id})">REMOVE</button>
+                            </div>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(div);
+                });
+            }
+
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-tax').innerText = `$${tax.toFixed(2)}`;
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+            cartCount.innerText = totalQty;
+        }
+
+        window.changeQty = (id, delta) => {
+            const item = cart.find(c => c.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) removeFromCart(id);
+                else updateCart();
+            }
+        };
+
+        window.removeFromCart = (id) => {
+            cart = cart.filter(c => c.id !== id);
+            updateCart();
+        };
+
+        window.addToCart = addToCart;
+
+        // 3. LOCATION SEARCH
+        const searchForm = document.getElementById('search-form');
+        const locationsGrid = document.getElementById('location-results');
+
+        function renderLocations(results) {
+            locationsGrid.innerHTML = '';
+            if (results.length === 0) {
+                locationsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">No locations found in that area. Try "Houston" or "New York".</div>';
+            } else {
+                results.forEach(loc => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    card.innerHTML = `
+                        <h3 class="oswald">${loc.name}</h3>
+                        <p>${loc.address}</p>
+                        <p>${loc.city}, ${loc.state} ${loc.zip}</p>
+                        <p>${loc.phone}</p>
+                        <div class="hours">
+                            <p><strong>Open Now:</strong> Closing at 11pm</p>
+                        </div>
+                        <div class="result-btns">
+                            <button class="btn btn-outline-orange" style="width: 100%; border: 1px solid var(--popeyes-orange);">Get Directions</button>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="alert('Pickup location set to: ${loc.name}')">Order Pickup</button>
+                        </div>
+                    `;
+                    locationsGrid.appendChild(card);
+                });
+            }
+            locationsGrid.classList.add('visible');
+        }
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = document.getElementById('zip-input').value.toLowerCase();
+            const results = locationData.filter(loc => 
+                loc.city.toLowerCase().includes(query) || 
+                loc.zip.includes(query) || 
+                loc.name.toLowerCase().includes(query)
+            );
+            renderLocations(results);
+            window.scrollTo({
+                top: locationsGrid.offsetTop - 150,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initialize with default locations
+        renderLocations(locationData.slice(0, 3));
+
+        // 4. SCROLL & MISC
+        const reveals = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        reveals.forEach(reveal => revealObserver.observe(reveal));
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // Mobile Drawer
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        mobileToggle.addEventListener('click', () => {
+            mobileDrawer.classList.toggle('active');
+            mobileToggle.classList.toggle('open');
+        });
+
+        // Checkout Button
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            if(cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            alert('Order placed successfully! Love that chicken!');
+            cart = [];
+            updateCart();
+            toggleCart();
+        });
+    </script>
+</body>
+</html>
